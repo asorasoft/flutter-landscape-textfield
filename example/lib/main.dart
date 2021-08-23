@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Must wrap the whole scaffold with LandscapeTextFieldProvider
     return LandscapeTextFieldProvider(
       buttonBuilder: (closeKeyboard) {
         return ElevatedButton(
