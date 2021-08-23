@@ -50,6 +50,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FocusNode secondInput = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return LandscapeTextFieldProvider(
@@ -69,12 +71,18 @@ class _MyHomePageState extends State<MyHomePage> {
             // Input field for portrait mode
             LandscapeTextField(
               decoration: const InputDecoration(hintText: 'Your name here...'),
+              onSubmitted: (_) {
+                FocusScope.of(context).requestFocus(secondInput);
+              },
             ),
             const SizedBox(
               height: 10,
             ),
             LandscapeTextField(
               decoration: const InputDecoration(hintText: 'Anything here...'),
+              maxLength: 500,
+              focusNode: secondInput,
+              maxLines: null,
               onChanged: (text) {
                 print(text);
               },

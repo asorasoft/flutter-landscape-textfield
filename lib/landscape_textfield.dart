@@ -1,5 +1,7 @@
 library landscape_textfield;
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -137,6 +139,7 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
 
   @override
   void dispose() {
+    print("Dispose a focus node");
     focusNode.dispose();
     controller.dispose();
     super.dispose();
@@ -239,7 +242,7 @@ class _LandscapeTextFieldWrapper extends StatefulWidget {
 class _LandscapeTextFieldWrapperState extends State<_LandscapeTextFieldWrapper> {
   var _keyboardShown = false;
   var _landscapeController = TextEditingController();
-
+  late StreamSubscription _keyboardStreamSubscription;
   var _focusNodeLandscape = FocusNode();
 
   _LandscapeTextFieldState? currentTextFieldState;
@@ -290,7 +293,13 @@ class _LandscapeTextFieldWrapperState extends State<_LandscapeTextFieldWrapper> 
                         maxLength: currentTextFieldState?.widget.maxLength,
                         maxLengthEnforcement: currentTextFieldState?.widget.maxLengthEnforcement,
                         onEditingComplete: currentTextFieldState?.widget.onEditingComplete,
-                        onSubmitted: currentTextFieldState?.widget.onSubmitted,
+                        // textInputAction: currentTextFieldState?.widget.textInputAction,
+                        // onSubmitted: (String text) {
+                        //   _hideKeyboard();
+                        //   if (currentTextFieldState?.widget.onSubmitted != null) {
+                        //     currentTextFieldState?.widget.onSubmitted!(text);
+                        //   }
+                        // },
                         onAppPrivateCommand: currentTextFieldState?.widget.onAppPrivateCommand,
                         inputFormatters: currentTextFieldState?.widget.inputFormatters,
                         autocorrect: currentTextFieldState?.widget.autocorrect ?? true,
@@ -309,6 +318,9 @@ class _LandscapeTextFieldWrapperState extends State<_LandscapeTextFieldWrapper> 
                         autofocus: true,
                         focusNode: _focusNodeLandscape,
                       ),
+                    ),
+                    const SizedBox(
+                      width: 10,
                     ),
                     // by clicking on button we dismiss keyboard
                     if (LandscapeTextFieldProvider.of(context)?.buttonBuilder != null)
@@ -334,10 +346,9 @@ class _LandscapeTextFieldWrapperState extends State<_LandscapeTextFieldWrapper> 
 
   @override
   void initState() {
-    var keyboardVisibilityController = KeyboardVisibilityController();
-
+    final keyboardVisibilityController = KeyboardVisibilityController();
     // Listen for changes
-    keyboardVisibilityController.onChange.listen((bool visible) {
+    _keyboardStreamSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
       setState(() {
         _keyboardShown = visible;
       });
@@ -347,8 +358,10 @@ class _LandscapeTextFieldWrapperState extends State<_LandscapeTextFieldWrapper> 
 
   @override
   void dispose() {
+    print("Dispose a focus node 2");
     _landscapeController.dispose();
     _focusNodeLandscape.dispose();
+    _keyboardStreamSubscription.cancel();
     super.dispose();
   }
 
