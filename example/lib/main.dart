@@ -53,6 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return LandscapeTextFieldProvider(
+      buttonBuilder: (closeKeyboard) {
+        return ElevatedButton(
+          onPressed: closeKeyboard,
+          child: const Text("រួចរាល់"),
+        );
+      },
       child: Scaffold(
         // Build app bar according to orientation and keyboard visibility
         appBar: AppBar(
@@ -61,20 +67,17 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Column(
           children: [
             // Input field for portrait mode
-            Container(
-              color: Colors.grey[600],
-              child: LandscapeTextField(),
+            LandscapeTextField(
+              decoration: const InputDecoration(hintText: 'Your name here...'),
             ),
             const SizedBox(
               height: 10,
             ),
-            Container(
-              color: Colors.grey[600],
-              child: LandscapeTextField(
-                onChanged: (text) {
-                  print(text);
-                },
-              ),
+            LandscapeTextField(
+              decoration: const InputDecoration(hintText: 'Anything here...'),
+              onChanged: (text) {
+                print(text);
+              },
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 library landscape_textfield;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,7 +70,7 @@ class LandscapeTextField extends StatefulWidget {
     this.showCursor,
     this.smartDashesType,
     this.smartQuotesType,
-    this.maxLines,
+    this.maxLines = 1,
     this.minLines,
     this.maxLength,
     this.maxLengthEnforcement,
@@ -122,11 +123,13 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
     focusNode = widget.focusNode ?? FocusNode();
     controller = widget.controller ?? TextEditingController();
     focusNode.addListener(() {
-      var provider = LandscapeTextFieldProvider.of(context);
-      if (provider != null) {
-        provider.attachTo(this);
-      } else {
-        print("LandscapeTextFieldProvider not found under the context");
+      if (focusNode.hasFocus) {
+        var provider = LandscapeTextFieldProvider.of(context);
+        if (provider != null) {
+          provider.attachTo(this);
+        } else {
+          print("LandscapeTextFieldProvider not found under the context");
+        }
       }
     });
     super.initState();
@@ -197,11 +200,12 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
 
 class LandscapeTextFieldProvider extends InheritedWidget {
   final Widget innerChild;
+  final Widget Function(Function() closeKeyboard)? buttonBuilder;
 
-  LandscapeTextFieldProvider({required Widget child})
+  LandscapeTextFieldProvider({this.buttonBuilder, required Widget child})
       : this.innerChild = child,
         super(
-          child: LandscapeTextFieldWrapper(
+          child: _LandscapeTextFieldWrapper(
             key: GlobalKey<_LandscapeTextFieldWrapperState>(),
             child: child,
           ),
@@ -224,27 +228,35 @@ class LandscapeTextFieldProvider extends InheritedWidget {
   }
 }
 
-class LandscapeTextFieldWrapper extends StatefulWidget {
-  const LandscapeTextFieldWrapper({Key? key, required this.child}) : super(key: key);
+class _LandscapeTextFieldWrapper extends StatefulWidget {
+  const _LandscapeTextFieldWrapper({Key? key, required this.child}) : super(key: key);
   final Widget child;
 
   @override
   _LandscapeTextFieldWrapperState createState() => _LandscapeTextFieldWrapperState();
 }
 
-class _LandscapeTextFieldWrapperState extends State<LandscapeTextFieldWrapper> {
+class _LandscapeTextFieldWrapperState extends State<_LandscapeTextFieldWrapper> {
   var _keyboardShown = false;
   var _landscapeController = TextEditingController();
 
   var _focusNodeLandscape = FocusNode();
 
-  TextEditingController? attachedTextEditingController;
-  ValueChanged<String>? onChanged;
+  _LandscapeTextFieldState? currentTextFieldState;
 
   attachTo(_LandscapeTextFieldState textFieldState) {
-    attachedTextEditingController = textFieldState.controller;
-    onChanged = textFieldState.widget.onChanged;
-    _landscapeController.text = attachedTextEditingController!.text;
+    _landscapeController.text = textFieldState.controller.text;
+    setState(() {
+      currentTextFieldState = textFieldState;
+    });
+  }
+
+  void _hideKeyboard() {
+    final currentFocus = FocusScope.of(context);
+
+    if (!currentFocus.hasPrimaryFocus && currentFocus.hasFocus) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
   }
 
   Widget buildLandscapeFullscreenInput() {
@@ -268,38 +280,44 @@ class _LandscapeTextFieldWrapperState extends State<LandscapeTextFieldWrapper> {
                     // landscape fs input
                     Expanded(
                       child: TextField(
+                        decoration: currentTextFieldState?.widget.decoration,
+                        minLines: currentTextFieldState?.widget.minLines,
+                        maxLines: currentTextFieldState?.widget.maxLines,
+                        keyboardType: currentTextFieldState?.widget.keyboardType,
+                        obscureText: currentTextFieldState?.widget.obscureText ?? false,
+                        obscuringCharacter: currentTextFieldState?.widget.obscuringCharacter ?? '•',
+                        textCapitalization: currentTextFieldState?.widget.textCapitalization ?? TextCapitalization.none,
+                        maxLength: currentTextFieldState?.widget.maxLength,
+                        maxLengthEnforcement: currentTextFieldState?.widget.maxLengthEnforcement,
+                        onEditingComplete: currentTextFieldState?.widget.onEditingComplete,
+                        onSubmitted: currentTextFieldState?.widget.onSubmitted,
+                        onAppPrivateCommand: currentTextFieldState?.widget.onAppPrivateCommand,
+                        inputFormatters: currentTextFieldState?.widget.inputFormatters,
+                        autocorrect: currentTextFieldState?.widget.autocorrect ?? true,
+                        autofillHints: currentTextFieldState?.widget.autofillHints,
                         controller: _landscapeController,
                         onChanged: (String text) {
-                          if (attachedTextEditingController != null) {
+                          if (currentTextFieldState?.controller != null) {
                             try {
-                              attachedTextEditingController!.text = text;
+                              currentTextFieldState!.controller.text = text;
                             } catch (_) {}
                           }
-                          if (this.onChanged != null) {
-                            this.onChanged!(text);
+                          if (currentTextFieldState?.widget.onChanged != null) {
+                            currentTextFieldState!.widget.onChanged!(text);
                           }
                         },
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
                         autofocus: true,
                         focusNode: _focusNodeLandscape,
                       ),
                     ),
                     // by clicking on button we dismiss keyboard
-                    KeyboardDismissOnTap(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Container(
-                          color: Colors.grey[500],
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            child: Text(
-                              "Done",
-                            ),
-                          ),
-                        ),
+                    if (LandscapeTextFieldProvider.of(context)?.buttonBuilder != null)
+                      LandscapeTextFieldProvider.of(context)!.buttonBuilder!(_hideKeyboard)
+                    else
+                      ElevatedButton(
+                        onPressed: _hideKeyboard,
+                        child: Text('DONE'),
                       ),
-                    )
                   ],
                 ),
               ),
