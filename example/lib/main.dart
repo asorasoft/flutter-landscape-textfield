@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // print("Build app");
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -50,12 +51,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FocusNode primaryInput = FocusNode();
   final FocusNode secondInput = FocusNode();
 
   @override
   Widget build(BuildContext context) {
+    // print("Build main");
     // Must wrap the whole scaffold with LandscapeTextFieldProvider
-    return LandscapeTextFieldProvider(
+    return LandscapeTextFieldWrapper(
       buttonBuilder: (closeKeyboard) {
         return ElevatedButton(
           onPressed: closeKeyboard,
@@ -67,28 +70,44 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: const Text("Landscape fullscreen keyboard PoC"),
         ),
-        body: Column(
-          children: [
-            // Input field for portrait mode
-            LandscapeTextField(
-              decoration: const InputDecoration(hintText: 'Your name here...'),
-              onSubmitted: (_) {
-                FocusScope.of(context).requestFocus(secondInput);
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            LandscapeTextField(
-              decoration: const InputDecoration(hintText: 'Anything here...'),
-              maxLength: 500,
-              focusNode: secondInput,
-              maxLines: null,
-              onChanged: (text) {
-                print(text);
-              },
-            ),
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                decoration: const InputDecoration(
+                  hintText: 'Your name here...',
+                ),
+                onSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(primaryInput);
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              // Input field for portrait mode
+              LandscapeTextField(
+                label: const Text("Your name"),
+                focusNode: primaryInput,
+                decoration: const InputDecoration(hintText: 'Your name here...'),
+                onSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(secondInput);
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              LandscapeTextField(
+                label: const Text("Hello world"),
+                decoration: const InputDecoration(hintText: 'Anything here...'),
+                maxLength: 500,
+                focusNode: secondInput,
+                maxLines: null,
+                onChanged: (text) {
+                  print(text);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
