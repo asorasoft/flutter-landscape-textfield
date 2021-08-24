@@ -42,6 +42,7 @@ class LandscapeTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final VoidCallback? onEditingComplete;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onFieldSubmitted;
   final AppPrivateCommandCallback? onAppPrivateCommand;
   final List<TextInputFormatter>? inputFormatters;
   final bool? enabled;
@@ -69,6 +70,10 @@ class LandscapeTextField extends StatefulWidget {
   final TextEditingController? controller;
   final bool readOnly;
   final Widget? label;
+  final bool isFormField;
+  final FormFieldSetter<String>? onSaved;
+  final FormFieldValidator<String>? validator;
+  final AutovalidateMode? autovalidateMode;
 
   LandscapeTextField({
     this.textInputAction,
@@ -122,7 +127,69 @@ class LandscapeTextField extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.readOnly = false,
     this.label,
-  });
+  })  : isFormField = false,
+        onFieldSubmitted = null,
+        onSaved = null,
+        validator = null,
+        autovalidateMode = null;
+
+  LandscapeTextField.form({
+    this.textInputAction,
+    this.decoration,
+    this.keyboardType,
+    this.style,
+    this.strutStyle,
+    this.textAlignVertical,
+    this.textDirection,
+    this.toolbarOptions,
+    this.showCursor,
+    this.smartDashesType,
+    this.smartQuotesType,
+    this.maxLines = 1,
+    this.minLines,
+    this.maxLength,
+    this.maxLengthEnforcement,
+    this.onChanged,
+    this.onEditingComplete,
+    this.onSubmitted,
+    this.inputFormatters,
+    this.enabled,
+    this.cursorHeight,
+    this.cursorRadius,
+    this.cursorColor,
+    this.keyboardAppearance,
+    this.selectionControls,
+    this.onTap,
+    this.buildCounter,
+    this.scrollPhysics,
+    this.scrollController,
+    this.autofillHints,
+    this.restorationId,
+    this.textCapitalization = TextCapitalization.none,
+    this.obscuringCharacter = '•',
+    this.obscureText = false,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
+    this.expands = false,
+    this.cursorWidth = 2.0,
+    this.scrollPadding = const EdgeInsets.all(20.0),
+    this.enableInteractiveSelection = true,
+    this.enableIMEPersonalizedLearning = true,
+    this.focusNode,
+    this.controller,
+    this.textAlign = TextAlign.start,
+    this.readOnly = false,
+    this.label,
+    this.onFieldSubmitted,
+    this.onSaved,
+    this.validator,
+    this.autovalidateMode,
+  })  : isFormField = true,
+        onAppPrivateCommand = null,
+        mouseCursor = null,
+        selectionHeightStyle = ui.BoxHeightStyle.tight,
+        selectionWidthStyle = ui.BoxWidthStyle.tight,
+        dragStartBehavior = DragStartBehavior.start;
 
   @override
   State<LandscapeTextField> createState() => _LandscapeTextFieldState();
@@ -139,6 +206,7 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
   @override
   void initState() {
     showCursor = widget.showCursor;
+    readOnly = widget.readOnly;
     focusNode = widget.focusNode ?? FocusNode();
     controller = widget.controller ?? TextEditingController();
     final keyboardVisibilityController = KeyboardVisibilityController();
@@ -177,11 +245,11 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
   disable() {
     // setState(() {
     //   readOnly = true;
-    //   showCursor = null;
+    //   showCursor = true;
     // });
   }
 
-  enable() {
+  enable() async {
     // setState(() {
     //   readOnly = widget.readOnly;
     //   showCursor = true;
@@ -190,58 +258,111 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      textInputAction: widget.textInputAction,
-      decoration: widget.decoration,
-      keyboardType: widget.keyboardType,
-      style: widget.style,
-      strutStyle: widget.strutStyle,
-      textAlignVertical: widget.textAlignVertical,
-      textDirection: widget.textDirection,
-      toolbarOptions: widget.toolbarOptions,
-      smartDashesType: widget.smartDashesType,
-      smartQuotesType: widget.smartQuotesType,
-      maxLines: widget.maxLines,
-      minLines: widget.minLines,
-      maxLength: widget.maxLength,
-      maxLengthEnforcement: widget.maxLengthEnforcement,
-      onChanged: widget.onChanged,
-      onEditingComplete: widget.onEditingComplete,
-      onSubmitted: widget.onSubmitted,
-      onAppPrivateCommand: widget.onAppPrivateCommand,
-      inputFormatters: widget.inputFormatters,
-      enabled: widget.enabled,
-      cursorHeight: widget.cursorHeight,
-      cursorRadius: widget.cursorRadius,
-      cursorColor: widget.cursorColor,
-      keyboardAppearance: widget.keyboardAppearance,
-      selectionControls: widget.selectionControls,
-      onTap: widget.onTap,
-      mouseCursor: widget.mouseCursor,
-      buildCounter: widget.buildCounter,
-      scrollPhysics: widget.scrollPhysics,
-      scrollController: widget.scrollController,
-      autofillHints: widget.autofillHints,
-      restorationId: widget.restorationId,
-      textCapitalization: widget.textCapitalization,
-      obscuringCharacter: widget.obscuringCharacter,
-      obscureText: widget.obscureText,
-      autocorrect: widget.autocorrect,
-      enableSuggestions: widget.enableSuggestions,
-      expands: widget.expands,
-      cursorWidth: widget.cursorWidth,
-      selectionHeightStyle: widget.selectionHeightStyle,
-      selectionWidthStyle: widget.selectionWidthStyle,
-      scrollPadding: widget.scrollPadding,
-      dragStartBehavior: widget.dragStartBehavior,
-      enableInteractiveSelection: widget.enableInteractiveSelection,
-      enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
-      textAlign: widget.textAlign,
-      focusNode: focusNode,
-      controller: controller,
-      readOnly: readOnly,
-      showCursor: showCursor,
-    );
+    if (widget.isFormField) {
+      return TextFormField(
+        textInputAction: widget.textInputAction,
+        decoration: widget.decoration,
+        keyboardType: widget.keyboardType,
+        style: widget.style,
+        strutStyle: widget.strutStyle,
+        textAlignVertical: widget.textAlignVertical,
+        textDirection: widget.textDirection,
+        toolbarOptions: widget.toolbarOptions,
+        smartDashesType: widget.smartDashesType,
+        smartQuotesType: widget.smartQuotesType,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        maxLength: widget.maxLength,
+        maxLengthEnforcement: widget.maxLengthEnforcement,
+        onChanged: widget.onChanged,
+        onEditingComplete: widget.onEditingComplete,
+        onFieldSubmitted: widget.onSubmitted,
+        inputFormatters: widget.inputFormatters,
+        enabled: widget.enabled,
+        cursorHeight: widget.cursorHeight,
+        cursorRadius: widget.cursorRadius,
+        cursorColor: widget.cursorColor,
+        keyboardAppearance: widget.keyboardAppearance,
+        selectionControls: widget.selectionControls,
+        onTap: widget.onTap,
+        buildCounter: widget.buildCounter,
+        scrollPhysics: widget.scrollPhysics,
+        scrollController: widget.scrollController,
+        autofillHints: widget.autofillHints,
+        restorationId: widget.restorationId,
+        textCapitalization: widget.textCapitalization,
+        obscuringCharacter: widget.obscuringCharacter,
+        obscureText: widget.obscureText,
+        autocorrect: widget.autocorrect,
+        enableSuggestions: widget.enableSuggestions,
+        expands: widget.expands,
+        cursorWidth: widget.cursorWidth,
+        scrollPadding: widget.scrollPadding,
+        enableInteractiveSelection: widget.enableInteractiveSelection,
+        enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
+        textAlign: widget.textAlign,
+        focusNode: focusNode,
+        controller: controller,
+        readOnly: readOnly,
+        showCursor: showCursor,
+        onSaved: widget.onSaved,
+        validator: widget.validator,
+        autovalidateMode: widget.autovalidateMode,
+      );
+    } else {
+      return TextField(
+        textInputAction: widget.textInputAction,
+        decoration: widget.decoration,
+        keyboardType: widget.keyboardType,
+        style: widget.style,
+        strutStyle: widget.strutStyle,
+        textAlignVertical: widget.textAlignVertical,
+        textDirection: widget.textDirection,
+        toolbarOptions: widget.toolbarOptions,
+        smartDashesType: widget.smartDashesType,
+        smartQuotesType: widget.smartQuotesType,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        maxLength: widget.maxLength,
+        maxLengthEnforcement: widget.maxLengthEnforcement,
+        onChanged: widget.onChanged,
+        onEditingComplete: widget.onEditingComplete,
+        onSubmitted: widget.onSubmitted,
+        onAppPrivateCommand: widget.onAppPrivateCommand,
+        inputFormatters: widget.inputFormatters,
+        enabled: widget.enabled,
+        cursorHeight: widget.cursorHeight,
+        cursorRadius: widget.cursorRadius,
+        cursorColor: widget.cursorColor,
+        keyboardAppearance: widget.keyboardAppearance,
+        selectionControls: widget.selectionControls,
+        onTap: widget.onTap,
+        mouseCursor: widget.mouseCursor,
+        buildCounter: widget.buildCounter,
+        scrollPhysics: widget.scrollPhysics,
+        scrollController: widget.scrollController,
+        autofillHints: widget.autofillHints,
+        restorationId: widget.restorationId,
+        textCapitalization: widget.textCapitalization,
+        obscuringCharacter: widget.obscuringCharacter,
+        obscureText: widget.obscureText,
+        autocorrect: widget.autocorrect,
+        enableSuggestions: widget.enableSuggestions,
+        expands: widget.expands,
+        cursorWidth: widget.cursorWidth,
+        selectionHeightStyle: widget.selectionHeightStyle,
+        selectionWidthStyle: widget.selectionWidthStyle,
+        scrollPadding: widget.scrollPadding,
+        dragStartBehavior: widget.dragStartBehavior,
+        enableInteractiveSelection: widget.enableInteractiveSelection,
+        enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
+        textAlign: widget.textAlign,
+        focusNode: focusNode,
+        controller: controller,
+        readOnly: readOnly,
+        showCursor: showCursor,
+      );
+    }
   }
 }
 
@@ -260,7 +381,6 @@ class _LandscapeTextFieldWrapperState extends State<LandscapeTextFieldWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // print("Build wrapper parent");
     return _LandscapeTextFieldStack(
       key: wrapperKey,
       child: widget.child,
@@ -287,7 +407,6 @@ class _LandscapeTextFieldProvider extends InheritedWidget {
   }
 
   attachTo(_LandscapeTextFieldState textFieldState) {
-    print('Attach to a state');
     wrapperState?.attachTo(textFieldState);
   }
 
@@ -454,7 +573,6 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
     _focusNodeLandscape = FocusNode();
     final keyboardVisibilityController = KeyboardVisibilityController();
     _keyboardStreamSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
-      print("Update keyboard visible to $visible");
       if (!visible && _focusNodeLandscape.hasFocus) {
         _doneAction();
       }

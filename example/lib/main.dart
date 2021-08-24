@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 10,
               ),
               // Input field for portrait mode
-              LandscapeTextField(
+              LandscapeTextField.form(
                 label: const Text("Your name"),
                 focusNode: primaryInput,
                 decoration: const InputDecoration(hintText: 'Your name here...'),
