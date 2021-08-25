@@ -4,16 +4,16 @@ Possible to make fullscreen keyboard when keyboard is open in landscape mode.
 
 ## Demo
 
-`LandscapeTextField(...)` or `LandscapeTextField.form(...)` has 2 behavior options:
-    * `LandscapeTextFieldBehavior.KEEP_FOCUS`
-    * `LandscapeTextFieldBehavior.AUTO_OPEN`
+* `LandscapeTextField(...)` or `LandscapeTextField.form(...)` has 2 behavior options:
+  * `LandscapeTextFieldBehavior.KEEP_FOCUS`
+  * `LandscapeTextFieldBehavior.AUTO_OPEN`
 
 #### `LandscapeTextFieldBehavior.KEEP_FOCUS`
 
 ```dart
 LandscapeTextField(
   behavior: LandscapeTextFieldBehavior.KEEP_FOCUS,
-  label: const Text("This TextField's cursor will be still open when done editing in fullscreen keyboard."),
+  label: const Text("This TextField's cursor will be still active after done editing in fullscreen keyboard."),
   ...
 ),
 ```
