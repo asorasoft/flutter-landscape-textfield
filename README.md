@@ -32,7 +32,7 @@ LandscapeTextField(
 
 ![](https://raw.githubusercontent.com/asorasoft/flutter-landscape-textfield/master/doc/screenshot/auto_open.gif)
 
-* How to use
+## How to use
 
 Wrap your `Scaffold` with `LandscapeTextFieldWrapper`.
 Check the `example` folder or code below
