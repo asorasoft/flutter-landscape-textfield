@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // Input field for portrait mode
               LandscapeTextField.form(
                 label: const Text("Your name"),
+                behavior: LandscapeTextFieldBehavior.KEEP_FOCUS,
                 focusNode: primaryInput,
                 decoration: const InputDecoration(hintText: 'Your name here...'),
                 onSubmitted: (_) {
@@ -98,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               LandscapeTextField(
                 label: const Text("Hello world"),
+                // behavior: LandscapeTextFieldBehavior.KEEP_FOCUS,
                 decoration: const InputDecoration(hintText: 'Anything here...'),
                 maxLength: 500,
                 focusNode: secondInput,
