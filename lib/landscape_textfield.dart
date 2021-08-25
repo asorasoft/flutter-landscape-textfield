@@ -1,6 +1,7 @@
 library landscape_textfield;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -17,11 +18,20 @@ closeKeyboard(BuildContext context) {
   }
 }
 
+/// How the keyboard will appear in landscape mode
+/// AUTO_OPEN: When TextField is currently focused in portrait mode,
+///            rotating your device will automatically open fullscreen keyboard
+/// KEEP_FOCUS: When TextField is currently focused in portrait mode,
+///            rotating your device will keep the field focus but keyboard will be hidden.
+///            When you are done with the input, your TextField cursor is still there
 enum LandscapeTextFieldBehavior {
   AUTO_OPEN,
   KEEP_FOCUS,
 }
 
+///
+/// Contain every attribute of TextField and TextFormField
+///
 class LandscapeTextField extends StatefulWidget {
   final LandscapeTextFieldBehavior behavior;
   final TextInputAction? textInputAction;
@@ -133,7 +143,7 @@ class LandscapeTextField extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.readOnly = false,
     this.label,
-    this.behavior = LandscapeTextFieldBehavior.AUTO_OPEN,
+    this.behavior = LandscapeTextFieldBehavior.KEEP_FOCUS,
   })  : isFormField = false,
         onFieldSubmitted = null,
         onSaved = null,
@@ -191,7 +201,7 @@ class LandscapeTextField extends StatefulWidget {
     this.onSaved,
     this.validator,
     this.autovalidateMode,
-    this.behavior = LandscapeTextFieldBehavior.AUTO_OPEN,
+    this.behavior = LandscapeTextFieldBehavior.KEEP_FOCUS,
   })  : isFormField = true,
         onAppPrivateCommand = null,
         mouseCursor = null,
@@ -305,10 +315,15 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
               controller: controller,
               readOnly: orientation == Orientation.landscape ? true : widget.readOnly,
               showCursor: orientation == Orientation.landscape ? true : widget.showCursor,
-              onTap: orientation == Orientation.portrait || widget.readOnly
+              onTap: widget.readOnly
                   ? widget.onTap
                   : () {
-                      _attachLandscapeKeyboard();
+                      if (orientation == Orientation.landscape) {
+                        _attachLandscapeKeyboard();
+                      }
+                      if (orientation == Orientation.portrait && widget.onTap != null) {
+                        widget.onTap!();
+                      }
                     },
               onSaved: widget.onSaved,
               validator: widget.validator,
@@ -365,10 +380,15 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
               controller: controller,
               readOnly: orientation == Orientation.landscape ? true : widget.readOnly,
               showCursor: orientation == Orientation.landscape ? true : widget.showCursor,
-              onTap: orientation == Orientation.portrait || widget.readOnly
+              onTap: widget.readOnly
                   ? widget.onTap
                   : () {
-                      _attachLandscapeKeyboard();
+                      if (orientation == Orientation.landscape) {
+                        _attachLandscapeKeyboard();
+                      }
+                      if (orientation == Orientation.portrait && widget.onTap != null) {
+                        widget.onTap!();
+                      }
                     },
             );
           }
@@ -484,6 +504,9 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
   }
 }
 
+///
+/// Wrapper that contains a fullscreen keyboard stack on the whole screen
+///
 class LandscapeTextFieldWrapper extends StatefulWidget {
   final Widget Function(Function() hideKeyboard)? buttonBuilder;
   final Widget child;
@@ -560,8 +583,6 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
   late StreamSubscription _keyboardStreamSubscription;
   late FocusNode _focusNodeLandscape;
 
-  // bool _keyboardActive = false;
-
   _LandscapeTextFieldState? currentTextFieldState;
 
   attachTo(_LandscapeTextFieldState textFieldState) {
@@ -601,6 +622,7 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
           }
           return Padding(
             padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top,
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: AnnotatedRegion(
@@ -614,6 +636,7 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: SafeArea(
+                    top: false,
                     child: Padding(
                       padding: widget.padding ??
                           const EdgeInsets.only(
@@ -688,6 +711,7 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
             ),
           );
         } else {
+          currentTextFieldState = null;
           return Container();
         }
       },
@@ -699,7 +723,9 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
     _focusNodeLandscape = FocusNode();
     final keyboardVisibilityController = KeyboardVisibilityController();
     _keyboardStreamSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
-      if (!visible && _focusNodeLandscape.hasFocus) {
+      if (!visible && _focusNodeLandscape.hasFocus && Platform.isAndroid) {
+        // On Android, the back button will close keyboard which still keep the Fullscreen TextField on focus,
+        // We need to make it done at that time
         _doneAction();
       }
     });

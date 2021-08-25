@@ -1,12 +1,11 @@
 name: landscape_textfield
 description: Possible to make fullscreen keyboard when keyboard is open in landscape mode.
 version: 0.0.1
-author:
-homepage:
+homepage: https://github.com/asorasoft/flutter-landscape-textfield
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
@@ -22,7 +21,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
+  plugin:
+    platforms:
+      android:
+        package: com.example.landscape-textfield
+        pluginClass: LandscapeTextFieldPlugin
+      ios:
+        pluginClass: LandscapeTextFieldPlugin
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

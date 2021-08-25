@@ -56,8 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // print("Build main");
-    // Must wrap the whole scaffold with LandscapeTextFieldProvider
+    // Must wrap the whole scaffold with LandscapeTextFieldWrapper
     return LandscapeTextFieldWrapper(
       buttonBuilder: (closeKeyboard) {
         return ElevatedButton(
@@ -66,49 +65,56 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
       child: Scaffold(
-        // Build app bar according to orientation and keyboard visibility
         appBar: AppBar(
-          title: const Text("Landscape fullscreen keyboard PoC"),
+          title: const Text("Rotate your phone on keyboard open"),
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Your name here...',
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Normal TextField
+                TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Simple TextField...',
+                  ),
+                  onSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(primaryInput);
+                  },
                 ),
-                onSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(primaryInput);
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              // Input field for portrait mode
-              LandscapeTextField.form(
-                label: const Text("Your name"),
-                behavior: LandscapeTextFieldBehavior.KEEP_FOCUS,
-                focusNode: primaryInput,
-                decoration: const InputDecoration(hintText: 'Your name here...'),
-                onSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(secondInput);
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              LandscapeTextField(
-                label: const Text("Hello world"),
-                // behavior: LandscapeTextFieldBehavior.KEEP_FOCUS,
-                decoration: const InputDecoration(hintText: 'Anything here...'),
-                maxLength: 500,
-                focusNode: secondInput,
-                maxLines: null,
-                onChanged: (text) {
-                  print(text);
-                },
-              ),
-            ],
+                const SizedBox(
+                  height: 10,
+                ),
+                // TextFormField that need landscape keyboard
+                // Default behavior is LandscapeTextFieldBehavior.KEEP_FOCUS
+                LandscapeTextField.form(
+                  label: const Text("Keep focus"),
+                  focusNode: primaryInput,
+                  decoration: const InputDecoration(hintText: 'Type something here...'),
+                  onSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(secondInput);
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                // TextFormField that need landscape keyboard
+                // LandscapeTextFieldBehavior.AUTO_OPEN
+                LandscapeTextField(
+                  behavior: LandscapeTextFieldBehavior.AUTO_OPEN,
+                  label: const Text("Auto open"),
+                  decoration: const InputDecoration(hintText: 'Type anything...'),
+                  maxLength: 500,
+                  focusNode: secondInput,
+                  maxLines: null,
+                  onChanged: (text) {
+                    print(text);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
