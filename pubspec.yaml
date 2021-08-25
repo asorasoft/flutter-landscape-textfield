@@ -21,13 +21,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-  plugin:
-    platforms:
-      android:
-        package: com.example.landscape-textfield
-        pluginClass: LandscapeTextFieldPlugin
-      ios:
-        pluginClass: LandscapeTextFieldPlugin
+#  plugin:
+#    platforms:
+#      android:
+#        package: com.example.landscape-textfield
+#        pluginClass: LandscapeTextField
+#      ios:
+#        pluginClass: LandscapeTextField
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

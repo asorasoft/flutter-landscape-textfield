@@ -18,17 +18,6 @@ closeKeyboard(BuildContext context) {
   }
 }
 
-/// How the keyboard will appear in landscape mode
-/// AUTO_OPEN: When TextField is currently focused in portrait mode,
-///            rotating your device will automatically open fullscreen keyboard
-/// KEEP_FOCUS: When TextField is currently focused in portrait mode,
-///            rotating your device will keep the field focus but keyboard will be hidden.
-///            When you are done with the input, your TextField cursor is still there
-enum LandscapeTextFieldBehavior {
-  AUTO_OPEN,
-  KEEP_FOCUS,
-}
-
 ///
 /// Contain every attribute of TextField and TextFormField
 ///
@@ -504,6 +493,17 @@ class _LandscapeTextFieldState extends State<LandscapeTextField> {
   }
 }
 
+/// How the keyboard will appear in landscape mode
+/// AUTO_OPEN: When TextField is currently focused in portrait mode,
+///            rotating your device will automatically open fullscreen keyboard
+/// KEEP_FOCUS: When TextField is currently focused in portrait mode,
+///            rotating your device will keep the field focus but keyboard will be hidden.
+///            When you are done with the input, your TextField cursor is still there
+enum LandscapeTextFieldBehavior {
+  AUTO_OPEN,
+  KEEP_FOCUS,
+}
+
 ///
 /// Wrapper that contains a fullscreen keyboard stack on the whole screen
 ///
@@ -698,9 +698,11 @@ class _LandscapeTextFieldStackState extends State<_LandscapeTextFieldStack> {
                           if (widget.buttonBuilder != null)
                             widget.buttonBuilder!(_doneAction)
                           else
-                            ElevatedButton(
-                              onPressed: _doneAction,
-                              child: Text('DONE'),
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: _doneAction,
+                                child: Text('DONE'),
+                              ),
                             ),
                         ],
                       ),
