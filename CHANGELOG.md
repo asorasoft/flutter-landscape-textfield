@@ -1,6 +1,6 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - 25 Aug 2021.
 
-* TODO: Describe initial release.
+* Features on first release:
     - 2 keyboard behaviors available `LandscapeTextField.AUTO_OPEN`, `LandscapeTextField.KEEP_FOCUS`
     - Set padding on landscape keyboard
     - `LandscapeTextField` for `TextField`
