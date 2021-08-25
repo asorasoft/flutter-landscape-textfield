@@ -1,6 +1,6 @@
 name: landscape_textfield
 description: Possible to make fullscreen keyboard when keyboard is open in landscape mode.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/asorasoft/flutter-landscape-textfield
 
 environment:

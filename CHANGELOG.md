@@ -1,3 +1,9 @@
+## [0.0.2] - 25 Aug 2021.
+
+* Update `README`
+
+---
+
 ## [0.0.1] - 25 Aug 2021.
 
 * Features on first release:

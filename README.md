@@ -5,16 +5,34 @@ Possible to make fullscreen keyboard when keyboard is open in landscape mode.
 ## Demo
 
 `LandscapeTextField(...)` or `LandscapeTextField.form(...)` has 2 behavior options:
+    * `LandscapeTextFieldBehavior.KEEP_FOCUS`
+    * `LandscapeTextFieldBehavior.AUTO_OPEN`
 
-### Behavior `LandscapeTextFieldBehavior.KEEP_FOCUS`
+#### `LandscapeTextFieldBehavior.KEEP_FOCUS`
+
+```dart
+LandscapeTextField(
+  behavior: LandscapeTextFieldBehavior.KEEP_FOCUS,
+  label: const Text("This TextField's cursor will be still open when done editing in fullscreen keyboard."),
+  ...
+),
+```
 
 ![](https://raw.githubusercontent.com/asorasoft/flutter-landscape-textfield/master/doc/screenshot/keep_focus.gif)
 
-### Behavior `LandscapeTextFieldBehavior.AUTO_OPEN`
+#### `LandscapeTextFieldBehavior.AUTO_OPEN`
+
+```dart
+LandscapeTextField(
+  behavior: LandscapeTextFieldBehavior.AUTO_OPEN,
+  label: const Text("This focused TextField will open the keyboard automatically when rotate device."),
+  ...
+),
+```
 
 ![](https://raw.githubusercontent.com/asorasoft/flutter-landscape-textfield/master/doc/screenshot/auto_open.gif)
 
-## How to use
+* How to use
 
 Wrap your `Scaffold` with `LandscapeTextFieldWrapper`.
 Check the `example` folder or code below
